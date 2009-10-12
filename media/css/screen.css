@@ -19,7 +19,6 @@ h1 {
 }
 
 h2 {
-    font-size: 150%;
     margin: 0 0 0 0;
 }
 
@@ -43,7 +42,8 @@ div.row label {
 }
 
 input {
-    font-size: inherit;
+    font-size: 24px;
+    font-family: inherit;
     font-weight: inherit;
 }
 
