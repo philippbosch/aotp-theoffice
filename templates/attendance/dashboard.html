@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+    <script src="{{ MEDIA_URL }}js/dashboard.js"></script>
+{% endblock %}
+
+{% block title %}
+<h1>{% blocktrans with request.user.first_name as first_name %}Hello {{ first_name }}!{% endblocktrans %}</h1>
+{% endblock %}
+
+{% block content %}
+    {% if form.errors %}
+        <ul class="errors">
+        {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    <form method="post" action=".">
+        <h2>When have you been here?</h2>
+        {{ form.user }}
+        {% if form.user.errors %}{{ form.user.errors }}{% endif %}
+        {{ form.day }}
+        {% if form.errors.day %}{{ form.errors.day }}{% endif %}
+        <input type="submit" class="button" value="{% trans "Stamp" %}" id="submit" />
+    </form>
+    
+    {% if days.count %}
+        <h2>You've been here:</h2>
+        <ul>
+        {% for day in days %}
+            <li>{{ day.day|date:"l, F j, Y" }}{% if not day.paid %} – where's the money?!{% endif %}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

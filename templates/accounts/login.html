@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#{{ form.username.auto_id }}').focus();
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+<h1>Login</h1>
+<form method="post" action="." id="login">
+    {% if form.errors %}
+    <p class="errors">{% trans "Your username and password did not match. Please try again." %}</p>
+    {% endif %}
+    <div class="row">
+        {{ form.username.label_tag }}
+        {{ form.username }}
+    </div>
+    <div class="row">
+        {{ form.password.label_tag }}
+        {{ form.password }}
+    </div>
+    <input type="submit" class="button" value="{% trans "Login" %}" id="submit" />
+    <input type="hidden" name="next" value="{{ next }}" />
+</form>
+
+{% endblock %}
