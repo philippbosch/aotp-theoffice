@@ -3,12 +3,12 @@ from attendance.models import OfficeDay
 
 def pay(modeladmin, request, queryset):
     queryset.update(paid=True)
-pay.short_description = "Mark as payed"
+pay.short_description = "Mark as paid"
 
 
 def unpay(modeladmin, request, queryset):
     queryset.update(paid=False)
-unpay.short_description = "Mark as unpayed"
+unpay.short_description = "Mark as unpaid"
 
 
 class OfficeDayAdmin(admin.ModelAdmin):
