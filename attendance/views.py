@@ -20,11 +20,16 @@ class OfficeDayForm(forms.ModelForm):
 
 
 
+class PaymentForm(forms.Form):
+    amount = forms.IntegerField(help_text=_("Please pay only amounts that are dividable by 5."))
+
+
+
 @login_required
 def dashboard(request):
     if request.method == 'POST':
-        post = request.POST.copy()
-        form = init_form(request.user, post)
+        form = OfficeDayForm(request.POST)
+        form.fields['user'].initial = request.user.id
         if form.is_valid():
             if OfficeDay.objects.filter(user=request.user, day=request.POST['day']).count():
                 request.user.message_set.create(message=_("Hey, you already stamped for %s!" % request.POST['day']))
@@ -33,17 +38,37 @@ def dashboard(request):
                 request.user.message_set.create(message=_("You've been at The Office on %s. Thanks for your visit!" % request.POST['day']))
             return HttpResponseRedirect(reverse('attendance_dashboard'))
     else:
-        form = init_form(request.user)
+        form = OfficeDayForm()
+        form.fields['user'].initial = request.user.id
         form.fields['day'].initial = datetime.now()
     office_days = OfficeDay.objects.filter(user=request.user)
+    to_pay = OfficeDay.objects.filter(user=request.user, paid=False).count() * 5
+    payment_form = PaymentForm()
     return render_to_response('attendance/dashboard.html', {
         'form': form,
         'days': office_days,
+        'to_pay': to_pay,
+        'payment_form': payment_form,
     }, context_instance=RequestContext(request))
 
 
-
-def init_form(user, data=None):
-    form = OfficeDayForm(data)
-    form.fields['user'].initial = user.id
-    return form
+@login_required
+def pay(request):
+    form = PaymentForm(request.POST)
+    if form.is_valid():
+        amount = form.cleaned_data['amount']
+        to_pay = OfficeDay.objects.filter(user=request.user, paid=False).count() * 5
+        if amount > to_pay:
+            request.user.message_set.create(message=_("That's more money than you have to pay. Paying in advance is not possible yet."))
+            return HttpResponseRedirect(reverse('attendance_dashboard'))
+        office_days = OfficeDay.objects.filter(user=request.user, paid=False).order_by('id')
+        for day in office_days:
+            if amount < 5:
+                break
+            day.paid = True
+            day.save()
+            amount = amount - 5
+        return HttpResponseRedirect(reverse('attendance_dashboard'))
+    else:
+        request.user.message_set.create(message=_("Invalid amount!"))
+        return HttpResponseRedirect(reverse('attendance_dashboard'))

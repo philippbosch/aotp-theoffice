@@ -47,6 +47,10 @@ input {
     font-weight: inherit;
 }
 
+input[type=text] {
+    width: 140px;
+}
+
 input.button {
     border: 0;
     background: #FFF;
@@ -74,4 +78,19 @@ p.errors:before, ul.errorlist li:before {
 a {
     color: #999;
     text-decoration: none;
+}
+
+table.attendance tbody th {
+    padding-right: 1em;
+}
+
+table.attendance td.status {
+    color: #666;
+    font-style: italic;
+}
+
+div.helptext {
+    margin-top: 0.5em;
+    font-size: 50%;
+    font-weight: normal;
 }

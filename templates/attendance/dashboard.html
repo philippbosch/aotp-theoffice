@@ -26,12 +26,26 @@
         <input type="submit" class="button" value="{% trans "Stamp" %}" id="submit" />
     </form>
     
+    {% if to_pay %}
+        <p>You still have to pay <span id="to_pay">{{ to_pay }}</span> €.</p>
+        <form method="post" action="{% url attendance_pay %}" id="payment">
+            {{ payment_form.amount }}
+            <input type="submit" class="button" value="{% trans "Pay" %}" id="submit" />
+            <div class="helptext">{{ payment_form.amount.help_text }}</div>
+        </form>
+    {% endif %}
+    
     {% if days.count %}
         <h2>You've been here:</h2>
-        <ul>
-        {% for day in days %}
-            <li>{{ day.day|date:"l, F j, Y" }}{% if not day.paid %} – where's the money?!{% endif %}</li>
-        {% endfor %}
-        </ul>
+        <table class="attendance">
+            <tbody>
+            {% for day in days %}
+                <tr>
+                    <th class="day">{{ day.day|date:"l, F j, Y" }}</th>
+                    <td class="status">{% if not day.paid %}Dude, where's the money?!{% else %}Paid. Thanks!{% endif %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
 {% endblock %}
